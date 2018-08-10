@@ -64,7 +64,7 @@ dpml0x = 3*max(vs(:))/dx*(8/15 - 3/100*npmlx + 1/1500*npmlx^2);
 dpmlx = zeros(Nz,Nx);
 dpmlx(:,1:npmlx) = ones(Nz,1)*(dpml0x*((npmlx: - 1:1)./npmlx).^2);
 dpmlx(:,npmlx + nx + 1:Nx) = dpmlx(:,npmlx: - 1:1);
-% The PLM formula refers to the equations (2) and (3) of Marcinkovich and Olsen, 2003.
+% The PML formula refers to the equations (2) and (3) of Marcinkovich and Olsen, 2003.
 
 %% Wavefield calculating
 
