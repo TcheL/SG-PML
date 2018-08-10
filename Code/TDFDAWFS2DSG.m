@@ -51,7 +51,7 @@ src = (1 - 2*(pi*f0.*(t - t0)).^2).*exp( - (pi*f0*(t - t0)).^2);           	% th
 
 %% Perfectly matched layer absorbing factor
 
-% R = 1e-6;                                                                   % Recommend: $R = 1e-2, if $nabsr = 5; $R = 1e-3, if $nabsr = 10; $R = 1e-4, if $absr = 20.
+% R = 1e-6;                                                                   % Recommend: $R = 1e-2, if $npmlr = 5; $R = 1e-3, if $npmlr = 10; $R = 1e-4, if $npmlr = 20.
 % dpml0z = log(1/R)*3*max(vp(:))/(2*npmlz);
 dpml0z = 3*max(vp(:))/dz*(8/15 - 3/100*npmlz + 1/1500*npmlz^2);
 dpmlz = zeros(Nz,Nx);
