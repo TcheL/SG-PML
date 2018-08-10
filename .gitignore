@@ -1,1 +1,7 @@
 Backup.tar.gz
+*.aux
+*.blg
+*.bbl
+*.log
+*.synctex.gz
+*.tex.bak
