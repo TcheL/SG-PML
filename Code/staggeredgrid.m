@@ -36,7 +36,7 @@ figure;
 
     hold off;
 
-%% elastic wave stagger grid
+%% elastic wave staggered grid
 
 figure;
     axis equal;
