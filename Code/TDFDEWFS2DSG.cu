@@ -176,7 +176,7 @@ int main(int argc, char *argv[]) {
   wave W; media M; dim D; coeff C; factor F;
 
   int Nx, Nz;
-  int memSize;
+  size_t memSize;
   int i, j;
 
   cout << "Input nt = ";

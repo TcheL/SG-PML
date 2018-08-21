@@ -61,7 +61,7 @@ void wave_exe(wave W, media M, dim D, coeff C) {
   float *factor[10];
 
   int i;
-  int memSize = D.Nx*D.Nz*sizeof(float);
+  size_t memSize = D.Nx*D.Nz*sizeof(float);
   dpmlx  = (float*) malloc(memSize);
   dpmlz  = (float*) malloc(memSize);
   lambda = (float*) malloc(memSize);
@@ -214,7 +214,7 @@ int main(int argc, char *argv[]) {
   wave W; media M; dim D; coeff C;
 
   int Nx, Nz;
-  int memSize;
+  size_t memSize;
   int i;
   
   cout << "Input nt = ";
