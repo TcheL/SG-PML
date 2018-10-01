@@ -35,8 +35,8 @@ typedef struct {
 } factor;
 
 __global__ void pre_eval(wave W, media M, dim D, coeff C, factor F) {
-  int iz = threadIdx.x + blockIdx.x*blockDim.x;
-  int ix = threadIdx.y + blockIdx.y*blockDim.y;
+  int ix = threadIdx.x + blockIdx.x*blockDim.x;
+  int iz = threadIdx.y + blockIdx.y*blockDim.y;
   int idx = iz*D.Nx + ix;
   float dpmlx = 0.0, dpmlz = 0.0;
   float lambda, mu;
@@ -73,8 +73,8 @@ __global__ void pre_eval(wave W, media M, dim D, coeff C, factor F) {
 }
 
 __global__ void vel_eval(wave W, dim D, coeff C, factor F, int sidx) {
-  int iz = threadIdx.x + blockIdx.x*blockDim.x;
-  int ix = threadIdx.y + blockIdx.y*blockDim.y;
+  int ix = threadIdx.x + blockIdx.x*blockDim.x;
+  int iz = threadIdx.y + blockIdx.y*blockDim.y;
   int idx = iz*D.Nx + ix;
   int i;
   float Psum;
@@ -103,8 +103,8 @@ __global__ void vel_eval(wave W, dim D, coeff C, factor F, int sidx) {
 }
 
 __global__ void str_eval(wave W, dim D, coeff C, int sidx, float srclet, factor F) {
-  int iz = threadIdx.x + blockIdx.x*blockDim.x;
-  int ix = threadIdx.y + blockIdx.y*blockDim.y;
+  int ix = threadIdx.x + blockIdx.x*blockDim.x;
+  int iz = threadIdx.y + blockIdx.y*blockDim.y;
   int idx = iz*D.Nx + ix;
   int i;
   float Psum;
@@ -260,7 +260,7 @@ int main(int argc, char *argv[]) {
   cudaMalloc((float**) &W.txzt, memSize);
 
   dim3 Block(32, 16);
-  dim3 Grid(ceil(1.0*Nz/Block.x), ceil(1.0*Nx/Block.y));
+  dim3 Grid(ceil(1.0*Nx/Block.x), ceil(1.0*Nz/Block.y));
   
   cout << "Block = " << Block.x << " " << Block.y << endl;
   cout << "Grid = " << Grid.x << " " << Grid.y << endl;
