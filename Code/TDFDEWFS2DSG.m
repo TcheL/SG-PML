@@ -102,21 +102,21 @@ xnodes = nodr + npmlx + 1:nodr + npmlx + nx;
 nsrcz = nodr + npmlz + sz;
 nsrcx = nodr + npmlx + sx;
 
-vxt = zeros(NZ,NX,2);
-vxx = zeros(NZ,NX,2);
-vxz = zeros(NZ,NX,2);
-vzt = zeros(NZ,NX,2);
-vzx = zeros(NZ,NX,2);
-vzz = zeros(NZ,NX,2);
-txxt = zeros(NZ,NX,2);
-txxx = zeros(NZ,NX,2);
-txxz = zeros(NZ,NX,2);
-tzzt = zeros(NZ,NX,2);
-tzzx = zeros(NZ,NX,2);
-tzzz = zeros(NZ,NX,2);
-txzt = zeros(NZ,NX,2);
-txzx = zeros(NZ,NX,2);
-txzz = zeros(NZ,NX,2);
+vxt = zeros(NZ,NX);
+vxx = zeros(NZ,NX);
+vxz = zeros(NZ,NX);
+vzt = zeros(NZ,NX);
+vzx = zeros(NZ,NX);
+vzz = zeros(NZ,NX);
+txxt = zeros(NZ,NX);
+txxx = zeros(NZ,NX);
+txxz = zeros(NZ,NX);
+tzzt = zeros(NZ,NX);
+tzzx = zeros(NZ,NX);
+tzzz = zeros(NZ,NX);
+txzt = zeros(NZ,NX);
+txzx = zeros(NZ,NX);
+txzz = zeros(NZ,NX);
 Psum = NaN*ones(Nz,Nx);
 
 P = NaN*ones(nz,nx,nt);
@@ -125,84 +125,68 @@ tic;
 for it = 1:1:nt
     fprintf('The calculating time node is: it = %d\n',it);
     %% load source
-    txxx(nsrcz,nsrcx,1) = txxx(nsrcz,nsrcx,1) + ampl*src(it)./4;
-    txxz(nsrcz,nsrcx,1) = txxz(nsrcz,nsrcx,1) + ampl*src(it)./4;
-    tzzx(nsrcz,nsrcx,1) = tzzx(nsrcz,nsrcx,1) + ampl*src(it)./4;
-    tzzz(nsrcz,nsrcx,1) = tzzz(nsrcz,nsrcx,1) + ampl*src(it)./4;
-    txxt(:,:,1) = txxx(:,:,1) + txxz(:,:,1);
-    tzzt(:,:,1) = tzzx(:,:,1) + tzzz(:,:,1);
-    P(:,:,it) = txxt(znodes,xnodes,1);
-%     P(:,:,it) = tzzt(znodes,xnodes,1);
-%     P(:,:,it) = txzt(znodes,xnodes,1);
-    %% calculate v_x
+    txxx(nsrcz,nsrcx) = txxx(nsrcz,nsrcx) + ampl*src(it)./4;
+    txxz(nsrcz,nsrcx) = txxz(nsrcz,nsrcx) + ampl*src(it)./4;
+    tzzx(nsrcz,nsrcx) = tzzx(nsrcz,nsrcx) + ampl*src(it)./4;
+    tzzz(nsrcz,nsrcx) = tzzz(nsrcz,nsrcx) + ampl*src(it)./4;
+    txxt(:,:) = txxx(:,:) + txxz(:,:);
+    tzzt(:,:) = tzzx(:,:) + tzzz(:,:);
+    P(:,:,it) = txxt(znodes,xnodes);
+%     P(:,:,it) = tzzt(znodes,xnodes);
+%     P(:,:,it) = txzt(znodes,xnodes);
+    %% calculate $v_x$
     Psum(:,:) = 0;
     for i = 1:1:nodr
-        Psum = Psum + C(i).*(txxt(Znodes,Xnodes + i - 1,1) - txxt(Znodes,Xnodes - i,1));
+        Psum = Psum + C(i).*(txxt(Znodes,Xnodes + i - 1) - txxt(Znodes,Xnodes - i));
     end
-    vxx(Znodes,Xnodes,2) = Coeffi1.*vxx(Znodes,Xnodes,1) + Coeffi3.*Psum;
+    vxx(Znodes,Xnodes) = Coeffi1.*vxx(Znodes,Xnodes) + Coeffi3.*Psum;
     Psum(:,:) = 0;
     for i = 1:1:nodr
-        Psum = Psum + C(i).*(txzt(Znodes + i - 1,Xnodes,1) - txzt(Znodes - i,Xnodes,1));
+        Psum = Psum + C(i).*(txzt(Znodes + i - 1,Xnodes) - txzt(Znodes - i,Xnodes));
     end
-    vxz(Znodes,Xnodes,2) = Coeffi2.*vxz(Znodes,Xnodes,1) + Coeffi4.*Psum;
-    vxt(:,:,2) = vxx(:,:,2) + vxz(:,:,2);
-%     P(:,:,it) = vxt(znodes,xnodes,2);
-    %% calculate v_z
+    vxz(Znodes,Xnodes) = Coeffi2.*vxz(Znodes,Xnodes) + Coeffi4.*Psum;
+    vxt(:,:) = vxx(:,:) + vxz(:,:);
+%     P(:,:,it) = vxt(znodes,xnodes);
+    %% calculate $v_z$
     Psum(:,:) = 0;
     for i = 1:1:nodr
-        Psum = Psum + C(i).*(txzt(Znodes,Xnodes + i,1) - txzt(Znodes,Xnodes - i + 1,1));
+        Psum = Psum + C(i).*(txzt(Znodes,Xnodes + i) - txzt(Znodes,Xnodes - i + 1));
     end
-    vzx(Znodes,Xnodes,2) = Coeffi1.*vzx(Znodes,Xnodes,1) + Coeffi3.*Psum;
+    vzx(Znodes,Xnodes) = Coeffi1.*vzx(Znodes,Xnodes) + Coeffi3.*Psum;
     Psum(:,:) = 0;
     for i = 1:1:nodr
-        Psum = Psum + C(i).*(tzzt(Znodes + i,Xnodes,1) - tzzt(Znodes - i + 1,Xnodes,1));
+        Psum = Psum + C(i).*(tzzt(Znodes + i,Xnodes) - tzzt(Znodes - i + 1,Xnodes));
     end
-    vzz(Znodes,Xnodes,2) = Coeffi2.*vzz(Znodes,Xnodes,1) + Coeffi4.*Psum;
-    vzt(:,:,2) = vzx(:,:,2) + vzz(:,:,2);
-%     P(:,:,it) = vzt(znodes,xnodes,2);
-    %% calculate tau_{xx} and tau_{zz}
+    vzz(Znodes,Xnodes) = Coeffi2.*vzz(Znodes,Xnodes) + Coeffi4.*Psum;
+    vzt(:,:) = vzx(:,:) + vzz(:,:);
+%     P(:,:,it) = vzt(znodes,xnodes);
+    %% calculate $\tau_{xx}$ and $\tau_{zz}$
     Psum(:,:) = 0;
     for i = 1:1:nodr
-        Psum = Psum + C(i).*(vxt(Znodes,Xnodes + i,2) - vxt(Znodes,Xnodes - i + 1,2));
+        Psum = Psum + C(i).*(vxt(Znodes,Xnodes + i) - vxt(Znodes,Xnodes - i + 1));
     end
-    txxx(Znodes,Xnodes,2) = Coeffi1.*txxx(Znodes,Xnodes,1) + Coeffi5.*Psum;
-    tzzx(Znodes,Xnodes,2) = Coeffi1.*tzzx(Znodes,Xnodes,1) + Coeffi7.*Psum;
+    txxx(Znodes,Xnodes) = Coeffi1.*txxx(Znodes,Xnodes) + Coeffi5.*Psum;
+    tzzx(Znodes,Xnodes) = Coeffi1.*tzzx(Znodes,Xnodes) + Coeffi7.*Psum;
     Psum(:,:) = 0;
     for i = 1:1:nodr
-        Psum = Psum + C(i).*(vzt(Znodes + i - 1,Xnodes,2) - vzt(Znodes - i,Xnodes,2));
+        Psum = Psum + C(i).*(vzt(Znodes + i - 1,Xnodes) - vzt(Znodes - i,Xnodes));
     end
-    txxz(Znodes,Xnodes,2) = Coeffi2.*txxz(Znodes,Xnodes,1) + Coeffi6.*Psum;
-    tzzz(Znodes,Xnodes,2) = Coeffi2.*tzzz(Znodes,Xnodes,1) + Coeffi8.*Psum;
-    txxt(:,:,2) = txxx(:,:,2) + txxz(:,:,2);
-    tzzt(:,:,2) = tzzx(:,:,2) + tzzz(:,:,2);
-    %% calculate tau_{xz}
+    txxz(Znodes,Xnodes) = Coeffi2.*txxz(Znodes,Xnodes) + Coeffi6.*Psum;
+    tzzz(Znodes,Xnodes) = Coeffi2.*tzzz(Znodes,Xnodes) + Coeffi8.*Psum;
+    txxt(:,:) = txxx(:,:) + txxz(:,:);
+    tzzt(:,:) = tzzx(:,:) + tzzz(:,:);
+    %% calculate $\tau_{xz}$
     Psum(:,:) = 0;
     for i = 1:1:nodr
-        Psum = Psum + C(i).*(vzt(Znodes,Xnodes + i - 1,2) - vzt(Znodes,Xnodes - i,2));
+        Psum = Psum + C(i).*(vzt(Znodes,Xnodes + i - 1) - vzt(Znodes,Xnodes - i));
     end
-    txzx(Znodes,Xnodes,2) = Coeffi1.*txzx(Znodes,Xnodes,1) + Coeffi9.*Psum;
+    txzx(Znodes,Xnodes) = Coeffi1.*txzx(Znodes,Xnodes) + Coeffi9.*Psum;
     Psum(:,:) = 0;
     for i = 1:1:nodr
-        Psum = Psum + C(i).*(vxt(Znodes + i,Xnodes,2) - vxt(Znodes - i + 1,Xnodes,2));
+        Psum = Psum + C(i).*(vxt(Znodes + i,Xnodes) - vxt(Znodes - i + 1,Xnodes));
     end
-    txzz(Znodes,Xnodes,2) = Coeffi2.*txzz(Znodes,Xnodes,1) + Coeffi0.*Psum;
-    txzt(:,:,2) = txzx(:,:,2) + txzz(:,:,2);
-    %% exchange for next cycle
-    vxx(:,:,1) = vxx(:,:,2);
-    vxz(:,:,1) = vxz(:,:,2);
-    vxt(:,:,1) = vxt(:,:,2);
-    vzx(:,:,1) = vzx(:,:,2);
-    vzz(:,:,1) = vzz(:,:,2);
-    vzt(:,:,1) = vzt(:,:,2);
-    txxx(:,:,1) = txxx(:,:,2);
-    txxz(:,:,1) = txxz(:,:,2);
-    txxt(:,:,1) = txxt(:,:,2);
-    tzzx(:,:,1) = tzzx(:,:,2);
-    tzzz(:,:,1) = tzzz(:,:,2);
-    tzzt(:,:,1) = tzzt(:,:,2);
-    txzx(:,:,1) = txzx(:,:,2);
-    txzz(:,:,1) = txzz(:,:,2);
-    txzt(:,:,1) = txzt(:,:,2);
+    txzz(Znodes,Xnodes) = Coeffi2.*txzz(Znodes,Xnodes) + Coeffi0.*Psum;
+    txzt(:,:) = txzx(:,:) + txzz(:,:);
 end
 toc;
 

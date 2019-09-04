@@ -285,7 +285,7 @@ int main(int argc, char *argv[]) {
 
       if((it - 1)%nTimePreSnap == 0) {
         cudaDeviceSynchronize();
-        sprintf(file, "P%05d.bin", it - 1);
+        sprintf(file, "./data/P%05d.bin", it - 1);
         cudaMemcpy(P, W.txxt, memSize, cudaMemcpyDeviceToHost);
         exp_wave(D, file, P);
       }

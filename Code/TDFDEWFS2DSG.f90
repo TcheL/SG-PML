@@ -154,95 +154,79 @@ MODULE WaveExtrp
       INTEGER :: Zznds(Nzz) = [ (nodr + i, i = 1,Nzz,1) ], &
         & Xxnds(Nxx) = [ (nodr + i, i = 1,Nxx,1) ]
       INTEGER :: nsrcz = nodr + npmlz + sz, nsrcx = nodr + npmlx + sx
-      REAL    :: vxt(Nzzz, Nxxx, 2) = 0, vxx(Nzzz, Nxxx, 2) = 0, &
-        & vxz(Nzzz, Nxxx, 2) = 0, vzt(Nzzz, Nxxx, 2) = 0, &
-        & vzx(Nzzz, Nxxx, 2) = 0, vzz(Nzzz, Nxxx, 2) = 0, &
-        & txxt(Nzzz, Nxxx, 2) = 0, txxx(Nzzz, Nxxx, 2) = 0, &
-        & txxz(Nzzz, Nxxx, 2) = 0, tzzt(Nzzz, Nxxx, 2) = 0, &
-        & tzzx(Nzzz, Nxxx, 2) = 0, tzzz(Nzzz, Nxxx, 2) = 0, &
-        & txzt(Nzzz, Nxxx, 2) = 0, txzx(Nzzz, Nxxx, 2) = 0, &
-        & txzz(Nzzz, Nxxx, 2) = 0, SpcSum(Nzz, Nxx) = 0
+      REAL    :: vxt(Nzzz, Nxxx) = 0, vxx(Nzzz, Nxxx) = 0, &
+        & vxz(Nzzz, Nxxx) = 0, vzt(Nzzz, Nxxx) = 0, &
+        & vzx(Nzzz, Nxxx) = 0, vzz(Nzzz, Nxxx) = 0, &
+        & txxt(Nzzz, Nxxx) = 0, txxx(Nzzz, Nxxx) = 0, &
+        & txxz(Nzzz, Nxxx) = 0, tzzt(Nzzz, Nxxx) = 0, &
+        & tzzx(Nzzz, Nxxx) = 0, tzzz(Nzzz, Nxxx) = 0, &
+        & txzt(Nzzz, Nxxx) = 0, txzx(Nzzz, Nxxx) = 0, &
+        & txzz(Nzzz, Nxxx) = 0, SpcSum(Nzz, Nxx) = 0
       DO it = 1,nt,1
         WRITE(*,"(A,G0)") 'The calculating time node is: it = ',it
         !! load source
-        txxx(nsrcz, nsrcx, 1) = txxx(nsrcz, nsrcx, 1) + src(it)/4
-        txxz(nsrcz, nsrcx, 1) = txxz(nsrcz, nsrcx, 1) + src(it)/4
-        tzzx(nsrcz, nsrcx, 1) = tzzx(nsrcz, nsrcx, 1) + src(it)/4
-        tzzz(nsrcz, nsrcx, 1) = tzzz(nsrcz, nsrcx, 1) + src(it)/4
-        txxt(:, :, 1) = txxx(:, :, 1) + txxz(:, :, 1)
-        tzzt(:, :, 1) = tzzx(:, :, 1) + tzzz(:, :, 1)
-        P(:, :, it) = txxt(znds, xnds, 1);
-!        P(:, :, it) = tzzt(znds, xnds, 1);
-!        P(:, :, it) = txzt(znds, xnds, 1);
-        !! calculate v_x
+        txxx(nsrcz, nsrcx) = txxx(nsrcz, nsrcx) + src(it)/4
+        txxz(nsrcz, nsrcx) = txxz(nsrcz, nsrcx) + src(it)/4
+        tzzx(nsrcz, nsrcx) = tzzx(nsrcz, nsrcx) + src(it)/4
+        tzzz(nsrcz, nsrcx) = tzzz(nsrcz, nsrcx) + src(it)/4
+        txxt(:, :) = txxx(:, :) + txxz(:, :)
+        tzzt(:, :) = tzzx(:, :) + tzzz(:, :)
+        P(:, :, it) = txxt(znds, xnds);
+!        P(:, :, it) = tzzt(znds, xnds);
+!        P(:, :, it) = txzt(znds, xnds);
+        !! calculate $v_x$
         SpcSum = 0
         DO i = 1,nodr,1
-          SpcSum = SpcSum + C(i)*(txxt(Zznds, Xxnds + i - 1, 1) - txxt(Zznds, Xxnds - i, 1))
+          SpcSum = SpcSum + C(i)*(txxt(Zznds, Xxnds + i - 1) - txxt(Zznds, Xxnds - i))
         END DO
-        vxx(Zznds, Xxnds, 2) = Coef1*vxx(Zznds, Xxnds, 1) + Coef3*SpcSum
+        vxx(Zznds, Xxnds) = Coef1*vxx(Zznds, Xxnds) + Coef3*SpcSum
         SpcSum = 0
         DO i = 1,nodr,1
-          SpcSum = SpcSum + C(i)*(txzt(Zznds + i - 1, Xxnds, 1) - txzt(Zznds - i, Xxnds, 1))
+          SpcSum = SpcSum + C(i)*(txzt(Zznds + i - 1, Xxnds) - txzt(Zznds - i, Xxnds))
         END DO
-        vxz(Zznds, Xxnds, 2) = Coef2*vxz(Zznds, Xxnds, 1) + Coef4*SpcSum
-        vxt(:, :, 2) = vxx(:, :, 2) + vxz(:, :, 2)
-!        P(:, :, it) = vxt(znds, xnds, 2)
-        !! calculate v_z
+        vxz(Zznds, Xxnds) = Coef2*vxz(Zznds, Xxnds) + Coef4*SpcSum
+        vxt(:, :) = vxx(:, :) + vxz(:, :)
+!        P(:, :, it) = vxt(znds, xnds)
+        !! calculate $v_z$
         SpcSum = 0
         DO i = 1,nodr,1
-          SpcSum = SpcSum + C(i)*(txzt(Zznds, Xxnds + i, 1) - txzt(Zznds, Xxnds - i + 1, 1))
+          SpcSum = SpcSum + C(i)*(txzt(Zznds, Xxnds + i) - txzt(Zznds, Xxnds - i + 1))
         END DO
-        vzx(Zznds, Xxnds, 2) = Coef1*vzx(Zznds, Xxnds, 1) + Coef3*SpcSum
+        vzx(Zznds, Xxnds) = Coef1*vzx(Zznds, Xxnds) + Coef3*SpcSum
         SpcSum = 0
         DO i = 1,nodr,1
-          SpcSum = SpcSum + C(i)*(tzzt(Zznds + i, Xxnds, 1) - tzzt(Zznds - i + 1, Xxnds, 1))
+          SpcSum = SpcSum + C(i)*(tzzt(Zznds + i, Xxnds) - tzzt(Zznds - i + 1, Xxnds))
         END DO
-        vzz(Zznds, Xxnds, 2) = Coef2*vzz(Zznds, Xxnds, 1) + Coef4*SpcSum
-        vzt(:, :, 2) = vzx(:, :, 2) + vzz(:, :, 2)
-!        P(:, :, it) = vzt(znds, xnds, 2)
-        !! calculate tau_{xx} and tau_{zz}
+        vzz(Zznds, Xxnds) = Coef2*vzz(Zznds, Xxnds) + Coef4*SpcSum
+        vzt(:, :) = vzx(:, :) + vzz(:, :)
+!        P(:, :, it) = vzt(znds, xnds)
+        !! calculate $\tau_{xx}$ and $\tau_{zz}$
         SpcSum = 0
         DO i = 1,nodr,1
-          SpcSum = SpcSum + C(i)*(vxt(Zznds, Xxnds + i, 2) - vxt(Zznds, Xxnds - i + 1, 2))
+          SpcSum = SpcSum + C(i)*(vxt(Zznds, Xxnds + i) - vxt(Zznds, Xxnds - i + 1))
         END DO
-        txxx(Zznds, Xxnds, 2) = Coef1*txxx(Zznds, Xxnds, 1) + Coef5*SpcSum
-        tzzx(Zznds, Xxnds, 2) = Coef1*tzzx(Zznds, Xxnds, 1) + Coef7*SpcSum
+        txxx(Zznds, Xxnds) = Coef1*txxx(Zznds, Xxnds) + Coef5*SpcSum
+        tzzx(Zznds, Xxnds) = Coef1*tzzx(Zznds, Xxnds) + Coef7*SpcSum
         SpcSum = 0
         DO i = 1,nodr,1
-          SpcSum = SpcSum + C(i)*(vzt(Zznds + i - 1, Xxnds, 2) - vzt(Zznds - i, Xxnds, 2))
+          SpcSum = SpcSum + C(i)*(vzt(Zznds + i - 1, Xxnds) - vzt(Zznds - i, Xxnds))
         END DO
-        txxz(Zznds, Xxnds, 2) = Coef2*txxz(Zznds, Xxnds, 1) + Coef6*SpcSum
-        tzzz(Zznds, Xxnds, 2) = Coef1*tzzz(Zznds, Xxnds, 1) + Coef8*SpcSum
-        txxt(:, :, 2) = txxx(:, :, 2) + txxz(:, :, 2)
-        tzzt(:, :, 2) = tzzx(:, :, 2) + tzzz(:, :, 2)
-        !! calculate tau_{xz}
+        txxz(Zznds, Xxnds) = Coef2*txxz(Zznds, Xxnds) + Coef6*SpcSum
+        tzzz(Zznds, Xxnds) = Coef1*tzzz(Zznds, Xxnds) + Coef8*SpcSum
+        txxt(:, :) = txxx(:, :) + txxz(:, :)
+        tzzt(:, :) = tzzx(:, :) + tzzz(:, :)
+        !! calculate $\tau_{xz}$
         SpcSum = 0
         DO i = 1,nodr,1
-          SpcSum = SpcSum + C(i)*(vzt(Zznds, Xxnds + i - 1, 2) - vzt(Zznds, Xxnds - i, 2))
+          SpcSum = SpcSum + C(i)*(vzt(Zznds, Xxnds + i - 1) - vzt(Zznds, Xxnds - i))
         END DO
-        txzx(Zznds, Xxnds, 2) = Coef1*txzx(Zznds, Xxnds, 1) + Coef9*SpcSum
+        txzx(Zznds, Xxnds) = Coef1*txzx(Zznds, Xxnds) + Coef9*SpcSum
         SpcSum = 0
         DO i = 1,nodr,1
-          SpcSum = SpcSum + C(i)*(vxt(Zznds + i, Xxnds, 2) - vxt(Zznds - i + 1, Xxnds, 2))
+          SpcSum = SpcSum + C(i)*(vxt(Zznds + i, Xxnds) - vxt(Zznds - i + 1, Xxnds))
         END DO
-        txzz(Zznds, Xxnds, 2) = Coef2*txzz(Zznds, Xxnds, 1) + Coef0*SpcSum
-        txzt(:, :, 2) = txzx(:, :, 2) + txzz(:, :, 2)
-        !! exchange for next cycle
-        vxx(:, :, 1) = vxx(:, :, 2)
-        vxz(:, :, 1) = vxz(:, :, 2)
-        vxt(:, :, 1) = vxt(:, :, 2)
-        vzx(:, :, 1) = vzx(:, :, 2)
-        vzz(:, :, 1) = vzz(:, :, 2)
-        vzt(:, :, 1) = vzt(:, :, 2)
-        txxx(:, :, 1) = txxx(:, :, 2)
-        txxz(:, :, 1) = txxz(:, :, 2)
-        txxt(:, :, 1) = txxt(:, :, 2)
-        tzzx(:, :, 1) = tzzx(:, :, 2)
-        tzzz(:, :, 1) = tzzz(:, :, 2)
-        tzzt(:, :, 1) = tzzt(:, :, 2)
-        txzx(:, :, 1) = txzx(:, :, 2)
-        txzz(:, :, 1) = txzz(:, :, 2)
-        txzt(:, :, 1) = txzt(:, :, 2)
+        txzz(Zznds, Xxnds) = Coef2*txzz(Zznds, Xxnds) + Coef0*SpcSum
+        txzt(:, :) = txzx(:, :) + txzz(:, :)
       END DO
     END SUBROUTINE CalWave 
 
@@ -250,7 +234,7 @@ END MODULE WaveExtrp
 
 !************************  TDFDEWFS2DSG  ***********************
 ! Time Domain Finite Difference Elastic Wave Field Simulating with 2-Dimension Staggered Grid
-! Written by Tche. L. from USTC, 2016,7
+! Written by Tche. L. from USTC, 2016.7.
 ! References:
 !   Collino and Tsogka, 2001. Geophysics, Application of the perfectly matched absorbing layer model to the linear elastodynamic problem in anisotropic heterogeneous media.
 !   Marcinkovich and Olsen, 2003. Journal of Geophysical Research, On the implementation of perfectly mathced layers in a three-dimensional fourth-order velocity-stress finite difference scheme.
@@ -261,8 +245,8 @@ PROGRAM TDFDEWFS2DSG
   USE WaveExtrp
   IMPLICIT NONE
 
-  CHARACTER(LEN = 128) :: SnapFile = './Snapshot/Snapshot_****.dat'       ! the snapshot file name template.
-  CHARACTER(LEN = 128) :: SyntFile = 'SyntRcrd.dat'                       ! the synthetic record file name.
+  CHARACTER(LEN = 128) :: SnapFile = './data/Snapshot_****.dat'       ! the snapshot file name template.
+  CHARACTER(LEN = 128) :: SyntFile = './data/SyntRcrd.dat'                       ! the synthetic record file name.
   REAL    :: SyntR(nrcvr, nt)
   INTEGER :: i
 

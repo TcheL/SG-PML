@@ -140,41 +140,36 @@ MODULE WaveExtrp
       INTEGER :: Zznds(Nzz) = [ (nodr + i, i = 1,Nzz,1) ], &
         & Xxnds(Nxx) = [ (nodr + i, i = 1,Nxx,1) ]
       INTEGER :: nsrcz = nodr + npmlz + sz, nsrcx = nodr + npmlx + sx
-      REAL    :: Pt(Nzzz, Nxxx, 2) = 0, &
-        & Pz(Nzzz, Nxxx, 2) = 0, Px(Nzzz, Nxxx, 2) = 0, &
-        & vz(Nzzz, Nxxx, 2) = 0, vx(Nzzz, Nxxx, 2) = 0
+      REAL    :: Pt(Nzzz, Nxxx) = 0, &
+        & Pz(Nzzz, Nxxx) = 0, Px(Nzzz, Nxxx) = 0, &
+        & vz(Nzzz, Nxxx) = 0, vx(Nzzz, Nxxx) = 0
       REAL    :: SpcSum(Nzz, Nxx)
       DO it = 1,nt,1
         WRITE(*,"(A,G0)") 'The calculating time node is: it = ',it
-        Px(nsrcz, nsrcx, 1) = Px(nsrcz, nsrcx, 1) + src(it)/2
-        Pz(nsrcz, nsrcx, 1) = Pz(nsrcz, nsrcx, 1) + src(it)/2
-        Pt(:, :, 1) = Px(:, :, 1) + Pz(:, :, 1)
-        P(:, :, it) = Pt(znds, xnds, 1)
+        Px(nsrcz, nsrcx) = Px(nsrcz, nsrcx) + src(it)/2
+        Pz(nsrcz, nsrcx) = Pz(nsrcz, nsrcx) + src(it)/2
+        Pt(:, :) = Px(:, :) + Pz(:, :)
+        P(:, :, it) = Pt(znds, xnds)
         SpcSum = 0
         DO i = 1,nodr,1
-          SpcSum = SpcSum + C(i)*(Pt(Zznds, Xxnds + i, 1) - Pt(Zznds, Xxnds + 1 - i, 1))
+          SpcSum = SpcSum + C(i)*(Pt(Zznds, Xxnds + i) - Pt(Zznds, Xxnds + 1 - i))
         END DO
-        vx(Zznds, Xxnds, 2) = Coef1*vx(Zznds, Xxnds, 1) - Coef3*SpcSum
+        vx(Zznds, Xxnds) = Coef1*vx(Zznds, Xxnds) - Coef3*SpcSum
         SpcSum = 0
         DO i = 1,nodr,1
-          SpcSum = SpcSum + C(i)*(Pt(Zznds + i, Xxnds, 1) - Pt(Zznds + 1 - i, Xxnds, 1))
+          SpcSum = SpcSum + C(i)*(Pt(Zznds + i, Xxnds) - Pt(Zznds + 1 - i, Xxnds))
         END DO
-        vz(Zznds, Xxnds, 2) = Coef2*vz(Zznds, Xxnds, 1) - Coef4*SpcSum
+        vz(Zznds, Xxnds) = Coef2*vz(Zznds, Xxnds) - Coef4*SpcSum
         SpcSum = 0
         DO i = 1,nodr,1
-          SpcSum = SpcSum + C(i)*(vx(Zznds, Xxnds - 1 + i, 2) - vx(Zznds, Xxnds - i, 2))
+          SpcSum = SpcSum + C(i)*(vx(Zznds, Xxnds - 1 + i) - vx(Zznds, Xxnds - i))
         END DO
-        Px(Zznds, Xxnds, 2) = Coef1*Px(Zznds, Xxnds, 1) - Coef5*SpcSum
+        Px(Zznds, Xxnds) = Coef1*Px(Zznds, Xxnds) - Coef5*SpcSum
         SpcSum = 0
         DO i = 1,nodr,1
-          SpcSum = SpcSum + C(i)*(vz(Zznds - 1 + i, Xxnds, 2) - vz(Zznds - i, Xxnds, 2))
+          SpcSum = SpcSum + C(i)*(vz(Zznds - 1 + i, Xxnds) - vz(Zznds - i, Xxnds))
         END DO
-        Pz(Zznds, Xxnds, 2) = Coef2*Pz(Zznds, Xxnds, 1) - Coef6*SpcSum
-        Pt(:, :, 1) = Pt(:, :, 2)
-        Pz(:, :, 1) = Pz(:, :, 2)
-        Px(:, :, 1) = Px(:, :, 2)
-        vz(:, :, 1) = vz(:, :, 2)
-        vx(:, :, 1) = vx(:, :, 2)
+        Pz(Zznds, Xxnds) = Coef2*Pz(Zznds, Xxnds) - Coef6*SpcSum
       END DO
     END SUBROUTINE CalWave
 
@@ -182,7 +177,7 @@ END MODULE WaveExtrp
 
 !************************  TDFDAWFS2DSG  ***********************
 ! Time Domain Finite Difference Acoustic Wave Field Simulating with 2-Dimension Staggered Grid
-! Written by Tche. L. from USTC, 2016,7
+! Written by Tche. L. from USTC, 2016.7.
 ! References:
 !   Collino and Tsogka, 2001. Geophysics, Application of the perfectly matched absorbing layer model to the linear elastodynamic problem in anisotropic heterogeneous media.
 !   Marcinkovich and Olsen, 2003. Journal of Geophysical Research, On the implementation of perfectly mathced layers in a three-dimensional fourth-order velocity-stress finite difference scheme.
@@ -193,8 +188,8 @@ PROGRAM TDFDAWFS2DSG
   USE WaveExtrp
   IMPLICIT NONE
 
-  CHARACTER(LEN = 128) :: SnapFile = './Snapshot/Snapshot_****.dat'       ! the snapshot file name template.
-  CHARACTER(LEN = 128) :: SyntFile = 'SyntRcrd.dat'                       ! the synthetic record file name.
+  CHARACTER(LEN = 128) :: SnapFile = './data/Snapshot_****.dat'       ! the snapshot file name template.
+  CHARACTER(LEN = 128) :: SyntFile = './data/SyntRcrd.dat'                       ! the synthetic record file name.
   REAL    :: SyntR(nrcvr, nt)
   INTEGER :: i
 

@@ -5,3 +5,10 @@ Backup.tar.gz
 *.log
 *.synctex.gz
 *.tex.bak
+
+*.fls
+*.xdv
+*.fdb_latexmk
+
+Code/data/*
+Code/bin/*

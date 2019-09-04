@@ -189,7 +189,7 @@ void wave_exe(wave W, media M, dim D, coeff C) {
       W.vzt[idx] = W.vzx[idx] + W.vzz[idx];
 
     if(it%nTimePreSnap == 0) {
-      sprintf(file, "P%05d.bin", it);
+      sprintf(file, "./data/P%05d.bin", it);
       wave_exp(D, file, W.txxt);
     }
   }

@@ -2,7 +2,7 @@ function TDFDAWFS2DSG
 
 % TDFDAWFS2DSG
 % This is a program of Time Domain Finite Difference Acoustic Wave Field Simulating with 2-Dimension Staggered Grid.
-% Written by Tche.L. from USTC, 2016,6.
+% Written by Tche.L. from USTC, 2016.6.
 
 clc; clear; close all;
 % format long;
@@ -94,11 +94,11 @@ xnodes = nodr + npmlx + 1:nodr + npmlx + nx;
 nsrcz = nodr + npmlz + sz;
 nsrcx = nodr + npmlx + sx;
 
-Ut = NaN*ones(NZ,NX,2);                                                     % the wavefield value preallocation.
-Uz = zeros(NZ,NX,2);                                                        % The initial condition: all of wavefield values are null before source excitation.
-Ux = zeros(NZ,NX,2);                                                        % The initial condition: all of wavefield values are null before source excitation.
-Vz = zeros(NZ,NX,2);                                                        % The initial condition: all of wavefield values are null before source excitation.
-Vx = zeros(NZ,NX,2);                                                        % The initial condition: all of wavefield values are null before source excitation.
+Ut = NaN*ones(NZ,NX);                                                     % the wavefield value preallocation.
+Uz = zeros(NZ,NX);                                                        % The initial condition: all of wavefield values are null before source excitation.
+Ux = zeros(NZ,NX);                                                        % The initial condition: all of wavefield values are null before source excitation.
+Vz = zeros(NZ,NX);                                                        % The initial condition: all of wavefield values are null before source excitation.
+Vx = zeros(NZ,NX);                                                        % The initial condition: all of wavefield values are null before source excitation.
 Psum = NaN*ones(Nz,Nx);
 
 U = NaN*ones(nz,nx,nt);
@@ -106,35 +106,30 @@ U = NaN*ones(nz,nx,nt);
 tic;
 for it = 1:1:nt
     fprintf('The calculating time node is: it = %d\n',it);
-    Ux(nsrcz,nsrcx,1) = Ux(nsrcz,nsrcx,1) + ampl*src(it)./2;
-    Uz(nsrcz,nsrcx,1) = Uz(nsrcz,nsrcx,1) + ampl*src(it)./2;
-    Ut(:,:,1) = Ux(:,:,1) + Uz(:,:,1);
-    U(:,:,it) = Ut(znodes,xnodes,1);
+    Ux(nsrcz,nsrcx) = Ux(nsrcz,nsrcx) + ampl*src(it)./2;
+    Uz(nsrcz,nsrcx) = Uz(nsrcz,nsrcx) + ampl*src(it)./2;
+    Ut(:,:) = Ux(:,:) + Uz(:,:);
+    U(:,:,it) = Ut(znodes,xnodes);
     Psum(:,:) = 0;
     for i = 1:1:nodr
-        Psum = Psum + C(i).*(Ut(Znodes,Xnodes + i,1) - Ut(Znodes,Xnodes + 1 - i,1));
+        Psum = Psum + C(i).*(Ut(Znodes,Xnodes + i) - Ut(Znodes,Xnodes + 1 - i));
     end
-    Vx(Znodes,Xnodes,2) = Coeffi1.*Vx(Znodes,Xnodes,1) - Coeffi3.*Psum;
+    Vx(Znodes,Xnodes) = Coeffi1.*Vx(Znodes,Xnodes) - Coeffi3.*Psum;
     Psum(:,:) = 0;
     for i = 1:1:nodr
-        Psum = Psum + C(i).*(Ut(Znodes + i,Xnodes,1) - Ut(Znodes + 1 - i,Xnodes,1));
+        Psum = Psum + C(i).*(Ut(Znodes + i,Xnodes) - Ut(Znodes + 1 - i,Xnodes));
     end
-    Vz(Znodes,Xnodes,2) = Coeffi2.*Vz(Znodes,Xnodes,1) - Coeffi4.*Psum;
+    Vz(Znodes,Xnodes) = Coeffi2.*Vz(Znodes,Xnodes) - Coeffi4.*Psum;
     Psum(:,:) = 0;
     for i = 1:1:nodr
-        Psum = Psum + C(i).*(Vx(Znodes,Xnodes - 1 + i,2) - Vx(Znodes,Xnodes - i,2));
+        Psum = Psum + C(i).*(Vx(Znodes,Xnodes - 1 + i) - Vx(Znodes,Xnodes - i));
     end
-    Ux(Znodes,Xnodes,2) = Coeffi1.*Ux(Znodes,Xnodes,1) - Coeffi5.*Psum;
+    Ux(Znodes,Xnodes) = Coeffi1.*Ux(Znodes,Xnodes) - Coeffi5.*Psum;
     Psum(:,:) = 0;
     for i = 1:1:nodr
-        Psum = Psum + C(i).*(Vz(Znodes - 1 + i,Xnodes,2) - Vz(Znodes - i,Xnodes,2));
+        Psum = Psum + C(i).*(Vz(Znodes - 1 + i,Xnodes) - Vz(Znodes - i,Xnodes));
     end
-    Uz(Znodes,Xnodes,2) = Coeffi2.*Uz(Znodes,Xnodes,1) - Coeffi6.*Psum;
-    Ut(:,:,1) = Ut(:,:,2);
-    Uz(:,:,1) = Uz(:,:,2);
-    Ux(:,:,1) = Ux(:,:,2);
-    Vz(:,:,1) = Vz(:,:,2);
-    Vx(:,:,1) = Vx(:,:,2);
+    Uz(Znodes,Xnodes) = Coeffi2.*Uz(Znodes,Xnodes) - Coeffi6.*Psum;
 end
 toc;
 
