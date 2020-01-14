@@ -1,0 +1,26 @@
+\begin{tikzpicture}
+  \draw[->] (0, 0) -- (5.5, 0) node[right] {$x$};
+  \draw[->] (0, 0) -- (0, -5.5) node[below] {$z$};
+  \foreach \i in {0, 1, 4, 5}
+  {
+    \draw[thick, line cap = rect] (0, -\i) -- (5, -\i);
+    \draw[thick, line cap = rect] (\i, 0) -- (\i, -5);
+  }
+
+  \draw[thin] (0, 0) grid [xstep = 0.1, ystep = 1] (5, -1);
+  \draw[thin] (0, -4) grid [xstep = 0.1, ystep = 1] (5, -5);
+  \draw[thin] (0, 0) grid [xstep = 1, ystep = 0.1] (1, -5);
+  \draw[thin] (4, 0) grid [xstep = 1, ystep = 0.1] (5, -5);
+
+  \draw[thick] (6, -1.4) rectangle (7, -2.0);
+  \draw[thin] (6, -1.4) grid [xstep = 1, ystep = 0.1] (7, -2.0);
+  \draw[thick] (6, -2.2) rectangle (7, -2.8);
+  \draw[thin] (6, -2.2) grid [xstep = 0.1, ystep = 1] (7, -2.8);
+  \draw[thick] (6, -3.0) rectangle (7, -3.6);
+  \draw[thin] (6, -3.0) grid [xstep = 0.1, ystep = 0.1] (7, -3.6);
+
+  \node at (2.5, -2.5) {内部计算区域};
+  \node[right] at (7.2, -1.7) {$d_x \neq 0, d_z = 0$};
+  \node[right] at (7.2, -2.5) {$d_x = 0, d_z \neq 0$};
+  \node[right] at (7.2, -3.3) {$d_x \neq 0, d_z \neq 0$};
+\end{tikzpicture}

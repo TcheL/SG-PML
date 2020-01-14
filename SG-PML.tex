@@ -1,3 +1,4 @@
+%! TEX program = xelatex
 \documentclass[UTF8]{ctexart}
 \usepackage{graphicx}                                       % 绘图宏包 for \includegrahpics 命令
 \usepackage{xcolor}                                         % 颜色宏包 for 颜色
@@ -15,8 +16,8 @@
 \setlength{\headheight}{14pt}                               % 设置页眉高度
 % +++++ 设置标题信息 +++++
 \title{\vspace{10mm}\heiti\huge 交错网格与完全匹配层\vspace{30mm}}
-\author{\LARGE\textsc{Tche~L.}\thanks{~USTC~在读博士，tcheliu@mail.ustc.edu.cn}\vspace{10mm}}
-\date{2018年3月1日}
+\author{\LARGE\textsc{Tche~L.}\thanks{~USTC~在读研究生，tcheliu@mail.ustc.edu.cn}\vspace{10mm}}
+\date{2020年1月14日}
 % -----------------------------------
 \renewcommand{\thesection}{\chinese{section}、\kern -1em}                                            % 重设节标题
 % ++++ 修改节标题格式 ++++
@@ -31,7 +32,8 @@
 \usepackage{amsmath}										% 公式宏包 for gather 环境
 \usepackage{nicefrac}										% 斜分数宏包 for \nicefrac 斜分数命令
 \usepackage{amssymb}										% 数学字符宏包 for 黑色方块和三角
-\usepackage{listings}
+\usepackage{tikz}                                           % TikZ 绘图宏包
+\usepackage{listings}                                       % 程序列表宏包
 \definecolor{mygrn}{rgb}{0,0.6,0}
 \definecolor{mygry}{rgb}{0.5,0.5,0.5}
 \definecolor{mymau}{rgb}{0.58,0,0.82}
@@ -156,8 +158,8 @@
 吸收边界条件的思想就是在需要计算场值的区域之外加上一定厚度的吸收边界层，当波运行到计算边界时候，不会发生反射，而是直接穿透边界进入所加的吸收边界层，对吸收边界层设置一定的参数，从而起到吸收超出边界的波的作用。\par
 \begin{figure}[h]
   \centering
-  \includegraphics[width=90mm]{./Figure/pml.png}
-  \caption{完全匹配层吸收边示意图（图中：$d(x)=d_x,~d(z)=d_z$）}\label{fig:pml}
+  \include{./Figure/PML_sketch}
+  \caption{完全匹配层吸收边示意图}\label{fig:pml}
 \end{figure}
 在时域有限差分方法波场模拟中，完全匹配层（PML）吸收边界条件将波场分量在吸收边界区域分裂，分别对各个分裂的波场分量赋以不同的耗损。在计算区域截断边界外，PML~层是一种非物理的特殊吸收介质，该层的波阻抗与相邻介质的波阻抗完全匹配，因而入射波将无反射地穿过界面进行~PML~层，同时，由于~PML~层为有耗介质，进入~PML~层的入射波将迅速衰减，最终实现消弱边界反射的效果。\par
 PML~吸收边界具体做法如图~\ref{fig:pml}~所示，在内部计算区域，采用一般的速度—应力方程，而在~PML~层区域内，在频率空间域对方程中的~$x$~和~$z$~方向偏导分别作如下替换：
@@ -276,8 +278,8 @@ C_m^{(N)}=\frac{(-1)^{m+1}\prod\limits_{i=1,i\neq m}^N(2i-1)^2}{(2m-1)\prod\limi
 \end{equation}\par
 \begin{figure}[t]
   \centering
-  \includegraphics[width=70mm]{./Figure/asg.png}
-  \caption{声波交错网格示意图（$\bullet$：$P,~\rho v_P^2$；{\color{red}$\blacktriangle$}：$v_x,~\nicefrac{1}{\rho}$；{\color{green}$\blacksquare$}：$v_z,~\nicefrac{1}{\rho}$）}\label{fig:asg}
+  \include{./Figure/Staggered_grid_for_acoustic}
+  \caption{声波交错网格示意图}\label{fig:asg}
 \end{figure}
 按照如图~\ref{fig:asg}~所示波场分量和参数排布方式，我们在时间上采用如式~\eqref{eq:pml2}~所示的递推格式，在空间上采用如式~\eqref{eq:dudx}~所示的任意偶数阶差分近似，可以得到在~PML~层内采用第二种近似下的时间二阶差分精度、空间~$2N$~阶差分精度的交错网格有限差分声波方程时间递推格式如下：
 \begin{equation}
@@ -352,8 +354,8 @@ C_m^{(N)}=\frac{(-1)^{m+1}\prod\limits_{i=1,i\neq m}^N(2i-1)^2}{(2m-1)\prod\limi
 \end{equation}\par
 \begin{figure}[t]
   \centering
-  \includegraphics[width=70mm]{./Figure/esg.png}
-  \caption{弹性波交错网格示意图（{\color{red}$\square$}：$v_x,~\nicefrac{1}{\rho}$；{\color{red}$\blacksquare$}：$v_z,~\nicefrac{1}{\rho}$；{\color{blue}$\circ$}：$\tau_{xx},~\tau_{zz},~(\lambda+2\mu),~\lambda$；{\color{blue}$\bullet$}：$\tau_{xz},~\mu$）}\label{fig:esg}
+  \include{./Figure/Staggered_grid_for_elastic}
+  \caption{弹性波交错网格示意图}\label{fig:esg}
 \end{figure}
 按照如图~\ref{fig:esg}~所示波场分量和参数排布方式，我们在时间上采用如式~\eqref{eq:pml2}~所示的递推格式，在空间上采用如式~\eqref{eq:dudx}~所示的任意偶数阶差分近似，可以得到在~PML~层内采用第二种近似下的时间二阶差分精度、空间~$2N$~阶差分精度的交错网格有限差分弹性波方程时间递推格式如下：
 \begin{equation}

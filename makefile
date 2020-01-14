@@ -1,24 +1,35 @@
-xlx := latexmk -pdfxe -interaction=nonstopmode
 file := SG-PML
+sufs := aux \
+        bbl bcf blg \
+		fdb_latexmk fls \
+		idx ind ilg \
+		listing loc lof log lol los lot ltx \
+		nav nlo nls \
+		out \
+		toc \
+		run.xml \
+		snm synctex.gz \
+		vrb \
+		xdv
 
-all : tex2pdf backup view
+all : tex2pdf view
 
 cc : clean clear
 
 tex2pdf :
-	$(xlx) $(file).tex
+	xelatex $(file)
+
+full :
+	latexmk -pdfxe -interaction=nonstopmode $(file)
 
 view :
 	evince $(file).pdf &
 
-backup : $(file).tex $(file).pdf
-	tar -zpcv -f Backup.tar.gz $(file).tex $(file).pdf
-
 clean :
-	-rm -f $(addprefix $(file), .aux .blg .bbl .log .synctex.gz .tex.bak \
-	  .fls .xdv .fdb_latexmk)
+	-rm -f $(foreach suf,$(sufs),$(file).$(suf))
+	-rm -f $(foreach suf,$(sufs),Figure/*.$(suf))
 
 clear :
 	-rm -f $(file).pdf
 
-# vim:ft=make:noet
+# vim:ft=make:noet:ts=4

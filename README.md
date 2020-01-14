@@ -16,5 +16,5 @@ Tche LIU, <seistche@gmail.com>, USTC
 
 ## 波场模拟效果
 
-![plot](Figure/plot.gif)
+![Snapshot](Figure/Snapshot.gif)
 
