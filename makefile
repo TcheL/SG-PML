@@ -8,7 +8,7 @@ sufs := aux \
 		out \
 		toc \
 		run.xml \
-		snm synctex.gz \
+		snm synctex\(busy\) synctex.gz \
 		vrb \
 		xdv
 
