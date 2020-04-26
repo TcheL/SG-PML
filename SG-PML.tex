@@ -17,7 +17,7 @@
 % +++++ 设置标题信息 +++++
 \title{\vspace{10mm}\heiti\huge 交错网格与完全匹配层\vspace{30mm}}
 \author{\LARGE\textsc{Tche~L.}\thanks{~USTC~在读研究生，tcheliu@mail.ustc.edu.cn}\vspace{10mm}}
-\date{2020年1月14日}
+\date{2020年4月25日}
 % -----------------------------------
 \renewcommand{\thesection}{\chinese{section}、\kern -1em}                                           % 重设节标题
 % ++++ 修改节标题格式 ++++
@@ -135,7 +135,7 @@
 \begin{document}
 
 \maketitle
-\centerline{Version: 2.2}
+\centerline{Version: 2.3}
 \vspace{50mm}
 
 有限差分法是对介质模型，也就是对计算区域先进行离散网格化，
@@ -189,11 +189,17 @@ $C_n^{(N)}$~为差分系数，$2N$~为差分的空间阶数。
 同时，由于~PML~层为有耗介质，进入~PML~层的入射波将迅速衰减，
 最终实现削弱边界反射的效果。
 
-PML~吸收边界具体做法如图~\ref{fig:pml}~所示，
-在内部计算区域，采用一般的速度—应力方程，
-而在~PML~层区域内，在频率空间域对方程中的~$x$~和~$z$~方向偏导分别作如下替换：
-\[ \frac{\partial}{\partial x}\longrightarrow\frac{i\omega}{i\omega+d_x}\frac{\partial}{\partial x},\hspace{20mm} \frac{\partial}{\partial z}\longrightarrow\frac{i\omega}{i\omega+d_z}\frac{\partial}{\partial z} \]
-其中，$\omega$~为角频率，$d_x$~和~$d_z$~分别为~$x$~和~$z$~方向的阻尼因子。
+PML~吸收边界可以看做是对复空间中实坐标的解析扩展，
+具体做法如图~\ref{fig:pml}~所示。
+在内部计算区域，采用一般的速度—应力方程；
+而在~PML~层区域内，以~$x$~方向为例，
+定义一个新的复坐标系统\cite{Komatitsch_2007}：
+\[ \tilde{x}(x) = x - \frac{i}{\omega}\int_0^x d_x(s) ds \]
+其中，$\omega$~为角频率，$d_x$~为~$x$~方向的阻尼因子。
+对上式求导得复拉伸函数为：
+\[ s_x(x) = \frac{\partial \tilde{x}}{\partial x} = 1 - \frac{i}{\omega} d_x(x) = \frac{i\omega + d_x}{i\omega} \]
+则对于~PML~吸收边界，只需在频率空间域对方程中的~$x$~方向偏导分别作如下替换即可实现：
+\[ \frac{\partial}{\partial x} \longrightarrow \frac{\partial}{\partial \tilde{x}} = \frac{1}{s_x} \frac{\partial}{\partial x} = \frac{i\omega}{i\omega+d_x}\frac{\partial}{\partial x} \]
 
 例如，对于如下方程：
 \[ \frac{\partial u}{\partial t}=A\frac{\partial v}{\partial x} \]
@@ -335,12 +341,14 @@ $\rho$~为介质密度。
 & \big(\frac{\partial}{\partial t}+d_x\big)P_x=-\rho v_P^2\frac{\partial v_x}{\partial x} \\
 & \big(\frac{\partial}{\partial t}+d_z\big)P_z=-\rho v_P^2\frac{\partial v_z}{\partial z}
 \end{aligned} \right.
-\end{equation}\par
+\end{equation}
+
 \begin{figure}[t]
   \centering
   \include{./Figure/Staggered_grid_for_acoustic}
   \caption{声波交错网格示意图}\label{fig:asg}
 \end{figure}
+
 按照如图~\ref{fig:asg}~所示波场分量和参数排布方式，
 我们在时间上采用如式~\eqref{eq:pml2}~所示的递推格式，
 在空间上采用如式~\eqref{eq:dudx}~所示的任意偶数阶差分近似，
@@ -440,6 +448,7 @@ $v_p$~和~$v_s$~分别为介质的纵波速度和横波速度。
   \include{./Figure/Staggered_grid_for_elastic}
   \caption{弹性波交错网格示意图}\label{fig:esg}
 \end{figure}
+
 按照如图~\ref{fig:esg}~所示波场分量和参数排布方式，
 我们在时间上采用如式~\eqref{eq:pml2}~所示的递推格式，
 在空间上采用如式~\eqref{eq:dudx}~所示的任意偶数阶差分近似，
@@ -491,6 +500,8 @@ Cerjan C., Kosloff D., Kosloff R., Reshef M., 1985. A nonreflecting boundary con
 Collino F., Tsogka C., 2001. Application of the perfectly matched absorbing layer model to the linear elastodynamic problem in anisotropic heterogeneous media[J]. Geophysics, 66(1), 294-307.
 \bibitem{sun_2013}
 孙耀充，张延腾，白超英，2013. 二维弹性及粘弹性~TTI~介质中地震波场数值模拟：四种不同网格高阶有限差分算法研究[J]. 地球物理学进展，28(4)，1817-1827.
+\bibitem{Komatitsch_2007}
+Komatitsch, D. and Martin, R., 2007. An unsplit convolutional perfectly matched layer improved at grazing incidence for the seismic wave equation. Geophysics, 72(5), SM155-SM167.
 \bibitem{Marcinkovich_2003}
 Marcinkovich C., Olsen K., 2003. On the implementation of perfectly matched layers in a three-dimensional fourth-order velocity-stress finite difference scheme[J]. Journal of Geophysical Research, 108(B5).
 \end{thebibliography}
